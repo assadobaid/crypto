@@ -47,9 +47,7 @@ func (c *chacha20poly1305) sealGeneric(dst, nonce, plaintext, additionalData []b
 	s.XORKeyStream(discardBuf[:], discardBuf[:]) // skip the next 32 bytes
 	s.XORKeyStream(out, plaintext)
 
-	lenMessage := roundTo16(len(additionalData)) + roundTo16(len(plaintext)) + 8 + 8
-	polyInput := pool.get(lenMessage)
-
+	polyInput := pool.get(roundTo16(len(additionalData)) + roundTo16(len(plaintext)) + 8 + 8)
 	copy(polyInput, additionalData)
 	copy(polyInput[roundTo16(len(additionalData)):], out[:len(plaintext)])
 	binary.LittleEndian.PutUint64(polyInput[len(polyInput)-16:], uint64(len(additionalData)))
